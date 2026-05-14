@@ -11,16 +11,16 @@ The model is described in the following paper:
 
 Requires NEURON with Python and MPI support. 
 
-1. From /sim run `nrnivmodl ../mod`. This should create a directory called x86_64. 
+1. From /src run `nrnivmodl ../mod`. This should create a directory called x86_64. 
 2. To run type: `./runsim [num_proc]' or the equivalent `mpiexec -np [num_proc] nrniv -python -mpi init.py`
 
 ## Overview of file structure:
 
-* /sim/init.py: Main executable; calls functions from other modules. Sets what parameter file to use.
+* /src/init.py: Main executable; calls functions from other modules. Sets what parameter file to use.
 
-* /sim/netParams.py: Network parameters
+* /src/netParams.py: Network parameters
 
-* /sim/cfg.py: Simulation configuration
+* /src/cfg.py: Simulation configuration
 
 * /cells: source .py, .hoc, .json or .pkl files for the different cell types used in the model; these will be imported into netpyne
 
@@ -28,7 +28,6 @@ Requires NEURON with Python and MPI support.
 
 * /mod: NMODL files containing the ionic channel and synaptic mechanisms used in the model 
 
-* /data: where the model and simulation data is stored 
 
 
 ## Web-based graphical setup and execution via Open Source Brain (OSB) and NetPyNE GUI
