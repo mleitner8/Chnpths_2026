@@ -5,6 +5,7 @@ Simulation configuration for M1 model (using NetPyNE)
 
 Contributors: salvadordura@gmail.com
 """
+#cfg with LFP recording/plotting
 
 from netpyne import specs
 import pickle
@@ -23,7 +24,7 @@ cfg = specs.SimConfig()
 # ------------------------------------------------------------------------------
 cfg.duration = 5000
 cfg.dt = 0.025
-cfg.seeds = {'conn': 4321, 'stim': 1234, 'loc': 4321} #4321, 1234
+cfg.seeds = {'conn': 4321, 'stim': 1234, 'loc': 4321} 
 cfg.hParams = {'celsius': 34, 'v_init': -80}
 cfg.verbose = 0
 cfg.createNEURONObj = 1
@@ -35,7 +36,7 @@ cfg.cache_efficient = True
 cfg.printRunTime = 0.1
 cfg.oneSynPerNetcon = True  # only affects conns not in subconnParams; produces identical results
 
-cfg.timeRange = [500, cfg.duration]
+cfg.timeRange = [0, cfg.duration] #[500, cfg.duration]
 
 cfg.includeParamsLabel = False  # True # needed for modify synMech False
 cfg.printPopAvgRates = [1000., 5000.]
@@ -66,9 +67,15 @@ elif cfg.cellsrec == 4:
     cfg.recordCells = [(pop, 50) for pop in 'PT5B'] \
                       + [('PT5B', x) for x in [393, 447, 579, 19, 104, 214, 1138, 979, 799]]  # record selected cells
 
-cfg.recordTraces = {'V_soma': {'sec': 'soma', 'loc': 0.5, 'var': 'v', 'conds': {'pop': 'PT5B'}},
-                    'apic_0': {'sec': 'apic_0', 'loc': 0.5, 'var': 'v', 'conds': {'pop': 'PT5B'}}
-                    }
+#cfg.recordTraces = {'V_soma': {'sec': 'soma', 'loc': 0.5, 'var': 'v', 'conds': {'pop': 'PT5B'}},
+                    #'apic_0': {'sec': 'apic_0', 'loc': 0.5, 'var': 'v', 'conds': {'pop': 'PT5B'}}
+                   # }
+
+cfg.recordLFP = [[150, y, 150] for y in range(200,1300,100)] # [[150, y, 150] for y in range(200,1300,100)]
+
+cfg.saveLFPPops = allpops 
+
+cfg.recordDipoles = {'L2': ['IT2'], 'L4': ['IT4'], 'L5': ['IT5A', 'IT5B', 'PT5B']}
 
 cfg.recordStim = False
 cfg.recordTime = False
@@ -77,11 +84,11 @@ cfg.recordStep = 0.1
 # ------------------------------------------------------------------------------
 # Saving
 # ------------------------------------------------------------------------------
-cfg.simLabel = 'v56_Optuna6_74aee313_NEWPT5B_R937C'
-cfg.saveFolder = '../data/biophysical_variants'
+cfg.simLabel = 'v56_Optuna6_74aee313_NEWPT5B_LFP'
+cfg.saveFolder = '../data/LFP'
 cfg.savePickle = True
 cfg.saveJson = True
-cfg.saveDataInclude = ['simData', 'simConfig', 'netParams']  # , 'net']
+cfg.saveDataInclude = ['simData', 'simConfig', 'netParams']
 cfg.backupCfgFile = None  # ['cfg.py', 'backupcfg/']
 cfg.gatherOnlySimData = False
 cfg.saveCellSecs = False
@@ -93,16 +100,22 @@ cfg.compactConnFormat = 0
 # ------------------------------------------------------------------------------
 with open('../cells/popColors.pkl', 'rb') as fileObj: popColors = pickle.load(fileObj)['popColors']
 
-cfg.analysis['plotRaster'] = {'include': allpops, 'orderBy': ['pop', 'y'], 'timeRange': [500, cfg.duration],
-                              'saveFig': True, 'showFig': False, 'popRates': True, 'orderInverse': True,
-                              'popColors': popColors, 'figSize': (12, 10), 'lw': 0.3, 'markerSize': 3, 'marker': '.',
-                              'dpi': 300}
+#cfg.analysis['plotRaster'] = {'include': allpops, 'orderBy': ['pop', 'y'], 'timeRange': [500, cfg.duration],
+                              #'saveFig': True, 'showFig': False, 'popRates': True, 'orderInverse': True,
+                              #'popColors': popColors, 'figSize': (12, 10), 'lw': 0.3, 'markerSize': 3, 'marker': '.',
+                              #'dpi': 300}
 
-cfg.analysis['plotTraces'] = {'include': cfg.recordCells, 'timeRange': [0, cfg.duration], 'overlay': True,
-                              'oneFigPer': 'cell', 'figSize': (10, 4), 'saveFig': True, 'showFig': False}
+#cfg.analysis['plotTraces'] = {'include': cfg.recordCells, 'timeRange': [0, cfg.duration], 'overlay': True,
+                              #'oneFigPer': 'cell', 'figSize': (10, 4), 'saveFig': True, 'showFig': False}
+
+cfg.analysis['plotLFP'] = {'plots': ['timeSeries'], 'electrodes': list(range(len(cfg.recordLFP))), 'figSize': (12,10), 'timeRange': [1000,2000],  'saveFig': True, 'showFig':False} 
 
 
+cfg.analysis['plotCSD'] = {'CSDData': None, 'LFPData': None, 'pop': None, 'timeRange': [1000, 2000]}
 
+cfg.analysis['plotLFPPSD'] = {'PSDData': None, 'timeRange': [1000, 2000], 'saveFig': True,}
+
+#cfg.analysis['plotEEG'] = {'showCell': None, 'showPop': None}
 # ------------------------------------------------------------------------------
 # Cells
 # ------------------------------------------------------------------------------
@@ -124,7 +137,7 @@ cfg.ihlkcBelowSoma = 0.01
 cfg.ihlke = -86  # ih leak param (used in Migliore)
 cfg.ihSlope = 14 * 2
 
-cfg.removeNa = False  # simulate TTX; set gnabar=0s
+cfg.removeNa = False  # simulate TTX; set gnabar=0s #for het and KO
 cfg.somaNa = 5
 cfg.dendNa = 0.5
 cfg.axonNa = 7
@@ -253,8 +266,8 @@ cfg.NetStim1 = {'pop': 'IT5B', 'sec': 'soma', 'loc': 0.5, 'synMech': ['AMPA', 'N
 # Load mutant params from csv
 # ------------------------------------------------------------------------------
 cfg.dendNa = 0.5
-cfg.loadmutantParams = True
-cfg.variant = 'R937C'  # L1666F, E1211K, D195G, R853Q, K1422E, M1879T, WT
+cfg.loadmutantParams = False
+cfg.variant = 'WT'  # L1666F, E1211K, D195G, R853Q, K1422E, M1879T, WT
 
 # ------------------------------------------------------------------------------
 # Drug Effects
