@@ -77,7 +77,7 @@ netParams.correctBorder = {
 ## Load cell rules previously saved using netpyne format
 cellParamLabels = ['IT2_reduced', 'IT4_reduced', 'IT5A_reduced', 'IT5B_reduced',
                    'IT6_reduced', 'CT6_reduced', 'PV_simple', 'SOM_simple',
-                   'IT5A_full', 'PT5B_reduced'] #, 'PT5B_full'] # 'NGF_simple', 'VIP_reduced'] # list of cell rules to load from file
+                   'IT5A_full', 'PT5B_reduced', 'PT5B_full'] # 'NGF_simple', 'VIP_reduced'] # list of cell rules to load from file
 loadCellParams = cellParamLabels
 saveCellParams = True
 
@@ -151,32 +151,32 @@ for label, p in reducedCells.items():  # create cell rules that were not loaded
 ## PT5B full cell model params (700+ comps)
 # UC Davis PT Cell
 if 'PT5B_full' not in loadCellParams:
-    def csv_to_dict(filepath):
-        result = {}
-        with open(filepath, mode='r', newline='') as file:
-            reader = csv.DictReader(file)
-            fieldnames = reader.fieldnames
-            key_field = fieldnames[0]  # Use the first column as key
-            for row in reader:
-                key = row[key_field]
-                value = {k: v for k, v in row.items() if k != key_field}
-                result[key] = value
-        return result
+    # def csv_to_dict(filepath):
+    #     result = {}
+    #     with open(filepath, mode='r', newline='') as file:
+    #         reader = csv.DictReader(file)
+    #         fieldnames = reader.fieldnames
+    #         key_field = fieldnames[0]  # Use the first column as key
+    #         for row in reader:
+    #             key = row[key_field]
+    #             value = {k: v for k, v in row.items() if k != key_field}
+    #             result[key] = value
+    #     return result
 
 
     ###
     # Load CSV with Mutant Params
-    if cfg.loadmutantParams == True:
-        print("Loading mutant params: ", cfg.variant)
-    else:
-        cfg.variant = 'WT'
+    # if cfg.loadmutantParams == True:
+    #     print("Loading mutant params: ", cfg.variant)
+    # else:
+    #     cfg.variant = 'WT'
 
-    variants = csv_to_dict('../cells/MutantParameters_updated_042226.csv')
-    sorted_variant = dict(sorted(variants[cfg.variant].items()))
-    for key, value in sorted_variant.items():
-        sorted_variant[key] = float(value)
-    with open('../cells/Neuron_Model_12HH16HH/params/na12annaTFHH2mut.txt', 'w') as f:
-        json.dump(sorted_variant, f)
+    # variants = csv_to_dict('../cells/MutantParameters_updated_042226.csv')
+    # sorted_variant = dict(sorted(variants[cfg.variant].items()))
+    # for key, value in sorted_variant.items():
+    #     sorted_variant[key] = float(value)
+    # with open('../cells/Neuron_Model_12HH16HH/params/na12annaTFHH2mut.txt', 'w') as f:
+    #     json.dump(sorted_variant, f)
     ###
     netParams.importCellParams(label='PT5B_full', fileName='../cells/Neuron_Model_12HH16HH/Na12HH16HHModel_TF.py',
                                cellName='Na12Model_TF')
@@ -387,11 +387,11 @@ if 'PT5B_full' not in loadCellParams:
     # quit()
 
     # save to json with all the above modifications so easier/faster to load
-    if saveCellParams: netParams.saveCellParamsRule(label='PT5B_full', fileName='../cells/Na12HH16HH_TF_Feb2026.json')
+    if saveCellParams: netParams.saveCellParamsRule(label='PT5B_full', fileName='../cells/Na12HH16HH_TF_Nov2026.json')
 
-#else:
+else:
     # load existing params
-    #netParams.loadCellParams('PT5B_full', '../cells/Na12HH16HH_TF.json')
+    netParams.loadCellParams('PT5B_full', '../cells/Na12HH16HH_TF_November2026.json')
 
     # set weight normalization
    # netParams.addCellParamsWeightNorm('PT5B_full', '../conn/PT5B_full_weightNorm.pkl',
